@@ -1,0 +1,28 @@
+// Define the pins connected to the speaker
+#define SPEAKER_PIN 3
+
+void setup() {
+  // Set the speaker pin as an output
+  pinMode(SPEAKER_PIN, OUTPUT);
+}
+
+void loop() {
+  // Play 30 Hz tone for 10 seconds
+  playTone(30, 10000);
+  delay(1000); // Wait for 1 second between tones
+
+  // Play 48 Hz tone for 10 seconds
+  playTone(48, 10000);
+  delay(1000); // Wait for 1 second between tones
+
+  // Play 65 Hz tone for 10 seconds
+  playTone(65, 10000);
+  delay(1000); // Wait for 1 second between tones
+}
+
+// Function to play a tone of a given frequency (in Hz) for a specified duration (in milliseconds)
+void playTone(int frequency, int duration) {
+  tone(SPEAKER_PIN, frequency, duration);
+  delay(duration);
+  noTone(SPEAKER_PIN);
+}

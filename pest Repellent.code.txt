@@ -1,0 +1,184 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+//#include <Ultrasonic.h>
+
+#define TRIGGER_PIN    9    // Arduino pin tied to trigger pin on the ultrasonic sensor.
+#define ECHO_PIN       10   // Arduino pin tied to echo pin on the ultrasonic sensor.
+#define BUTTON_PIN     2    // Arduino pin tied to the push button.
+#define SPEAKER_PIN    3    // Arduino pin tied to the speaker.
+#define LCD_ADDRESS    0x3F // I2C address of the LCD display.
+#define MAX_DISTANCE   200  // Maximum distance we want to ping for (in centimeters).
+#define OFF_MODE       4    // Off mode
+#define NUM_MODES      5    // Total number of modes
+
+LiquidCrystal_I2C lcd(LCD_ADDRESS, 16, 2); // Initialize the LCD.
+//Ultrasonic ultrasonic(TRIGGER_PIN, ECHO_PIN); // Ultrasonic sensor setup.
+
+int lastButtonState = LOW;   // Previous state of the button
+int mode = 0;                // Current mode
+
+// Define custom characters for emojis
+byte customMosquito[8] = {
+  B00100,
+  B01010,
+  B00100,
+  B00000,
+  B00100,
+  B01010,
+  B10101,
+  B00000
+};
+
+byte customBat[8] = {
+  B00100,
+  B11110,
+  B11111,
+  B01111,
+  B11111,
+  B01111,
+  B11110,
+  B00000
+};
+
+byte customRat[8] = {
+  B00100,
+  B01110,
+  B10101,
+  B11011,
+  B11110,
+  B11110,
+  B11110,
+  B00000
+};
+
+byte customDetection[8] = {
+  B00100,
+  B01110,
+  B10101,
+  B11111,
+  B11111,
+  B11111,
+  B01110,
+  B00000
+};
+
+void setup() {
+  Serial.begin(9600); // Start serial communication
+  pinMode(BUTTON_PIN, INPUT_PULLUP); // Set button pin as input with internal pull-up resistor
+  pinMode(SPEAKER_PIN, OUTPUT);
+  pinMode(TRIGGER_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+  
+  lcd.init();         // Initialize the LCD
+  lcd.backlight();    // Turn on the LCD backlight
+  lcd.createChar(0, customMosquito); // Create custom characters
+  lcd.createChar(1, customRat);
+  lcd.createChar(2, customDetection);
+  lcd.createChar(3, customBat);
+  
+  lcd.setCursor(0, 0);
+  lcd.print("Electronic Pest");
+  lcd.setCursor(0, 1);
+  lcd.print("Repellent Start!");
+  delay(2000); // Display message for 2 seconds
+  
+  // Display initial mode
+  updateLCDMode();
+}
+
+void loop() {
+  int buttonState = digitalRead(BUTTON_PIN);
+
+  if (buttonState == LOW && lastButtonState == HIGH) {
+    // Button is pressed
+    mode = (mode + 1) % NUM_MODES; // Cycle through modes (0, 1, 2, 3,4)
+    updateLCDMode();
+    Serial.print("Button Pressed. Button State: ");
+    Serial.print(buttonState);
+    Serial.print(", Mode: ");
+    Serial.println(mode);
+  }
+  
+  lastButtonState = buttonState; // Update last button state
+}
+
+void playTone(int frequency) {
+  tone(SPEAKER_PIN, frequency);
+}
+void playTone1(int frequency1, int duration1) {
+  tone(SPEAKER_PIN, frequency1, duration1);
+}
+void stopSound() {
+  noTone(SPEAKER_PIN);
+}
+bool detectObject() {
+  // Measure distance using ultrasonic sensor
+  long duration;
+  float distance;
+  
+  digitalWrite(TRIGGER_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIGGER_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIGGER_PIN, LOW);
+  
+  duration = pulseIn(ECHO_PIN, HIGH);
+  distance = (duration * 0.0343) / 2;  // Calculate distance in cm
+  
+  // Check if an object is within a certain range
+  if (distance < 3) {  // Adjust to your desired distance
+    return true;
+  } else {
+    return false;
+  }
+}
+
+
+void updateLCDMode() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  switch (mode) {
+    case 0:
+      lcd.print("Mosquitos & Bugs");
+      playTone(27);
+      break;
+    case 1:
+      lcd.print("Rats  ");
+      playTone(36);
+      break;
+   case 2:
+      lcd.print("Bats & Cockroach  ");
+      playTone(55);
+      break;
+    case 3:
+      lcd.print("Sensor Detection");
+      if (detectObject()) {
+        playTone1(60,60000); // Call function to produce sound
+      };
+      break;
+    case 4:
+      lcd.print("OFF");
+      stopSound();
+      break;  
+    default:
+      lcd.print("Invalid Mode     ");
+      break;
+  }
+  lcd.setCursor(7, 1); // Set cursor to the center of the second row
+  switch (mode) {
+    case 0:
+      lcd.write(byte(0)); // Display customMosquito character
+      break;
+    case 1:
+      lcd.write(byte(1)); // Display customRat character
+      break;
+    case 2:
+      lcd.write(byte(3)); // Display customBat character
+      break;
+    case 3:
+      lcd.write(byte(2)); // Display customDetection character
+      break;  
+    default:
+      break;
+  }
+}

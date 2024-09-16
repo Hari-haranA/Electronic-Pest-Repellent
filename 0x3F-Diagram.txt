@@ -1,0 +1,36 @@
+0x3F
+Arduino Uno        Ultrasonic Sensor (HC-SR04)       Speaker          Push Button        LCD Display (I2C)
+-------------      --------------------------       -------          -----------        -------------------
+|           |      |                        |       |     |          |         |        |                     |
+|           |      |                        |       |     |          |         |        |                     |
+|  TRIGGER  |------| Trigger (Trig)         |       |     |          |         |        |                     |
+|  PIN 9    |      |                        |       |     |          |         |        |                     |
+|           |      |                        |       |     |          |         |        |                     |
+|  ECHO     |------| Echo (Echo)            |       |     |          |         |        |                     |
+|  PIN 10   |      |                        |       |     |          |         |        |                     |
+|           |      |                        |       |     |          |         |        |                     |
+|  BUTTON   |------|                        |       |     |          |  Push   |        |                     |
+|  PIN 2    |      |                        |       |     |          | Button  |        |                     |
+|           |      |                        |       |     |          |         |        |                     |
+|           |      |                        |-------|-----|----------|---------|--------|                     |
+|           |      |                        |       |     |          |         |        |                     |
+|           |      |                        |       |     |          |         |        |                     |
+|           |      |                        |       |     |          |         |        |                     |
+|  SPEAKER  |------------------------------------|-----|----------|---------|--------|                     |
+|  PIN 3    |      |                        |       |     |          |         |        |                     |
+|           |      |                        |       |     |          |         |        |                     |
+|           |      |                        |       |     |          |         |        |                     |
+-------------      --------------------------       -------          -----------        -------------------
+Ultrasonic Sensor (HC-SR04):
+Connect the Trigger pin to digital pin 9 (TRIGGER_PIN).
+Connect the Echo pin to digital pin 10 (ECHO_PIN).
+Speaker:
+Connect the positive terminal (usually the longer lead) of the speaker to digital pin 3 (SPEAKER_PIN).
+Connect the negative terminal (usually the shorter lead) of the speaker to GND.
+Push Button:
+Connect one terminal of the push button to digital pin 2 (BUTTON_PIN).
+Connect the other terminal of the push button to GND.
+LCD Display (I2C):
+Connect the SDA pin of the I2C backpack to the SDA pin (A4) of the Arduino Uno.
+Connect the SCL pin of the I2C backpack to the SCL pin (A5) of the Arduino Uno.
+Connect VCC and GND of the I2C backpack to 5V and GND respectively of the Arduino Uno.
